@@ -1,110 +1,153 @@
-# DeFi Portfolio Tracker - Take-Home Challenge
+# Ethereum Transaction History Viewer - Take-Home Challenge
 
-A take-home coding challenge to build a DeFi portfolio tracker with wallet connection and transaction history.
+Build a transaction history viewer that displays Ethereum transaction history for any given address.
 
 ## 🚀 Quick Start
 
 ```bash
-# Install dependencies
 npm install
-
-# Start both backend and frontend
 npm run dev
-```
-
-- **Frontend**: http://localhost:5173 (React + Vite)
-- **Backend**: http://localhost:3001 (NestJS)
-
-## 📁 Project Structure
 
 ```
-├── packages/
-│   ├── backend/          # NestJS API server
-│   └── frontend/         # React + Vite app
-└── README.md             # Project setup documentation
-```
 
-## ⚡ What's Included
-
-This template provides:
-
-- ✅ Monorepo setup with workspaces
-- ✅ NestJS backend with TypeScript
-- ✅ React frontend with Vite and TypeScript
-- ✅ Basic testing setup (Jest + Vitest)
-- ✅ Development environment ready to go
+- **Frontend**: [http://localhost:5173](http://localhost:5173/)
+- **Backend**: [http://localhost:3001](http://localhost:3001/)
 
 ## 🎯 Your Mission
 
-Build a DeFi portfolio tracker that:
+Build a web application that allows users to enter an Ethereum address and view its transaction history.
 
-### Core Features
+### What to Build
 
-- **Wallet Connection:** Connect with MetaMask
-- **Display connected address information**:  
-  After the successful connection or after changing the connected Metamask account, the app should display the following.
-  - **Token Balances:** Display ERC-20 token balances with USD values and token information (symbol, name, balance)
-  - **Transaction History:** Show recent transactions (ERC-20 transfers, ETH transfers)
-  - **Portfolio Value:** Calculate and display total portfolio value in USD
+Build a web application where users can:
 
-### Technical Requirements
+- Enter an Ethereum address
+- View transaction history for that address
+- See transaction details (hash, timestamp, amounts, etc.)
+- Navigate through multiple transactions
 
-- **Frontend**: React with TypeScript, Ethereum Mainnet. If applying to **FullStack with Frontend expertise** we expect the main focus to be in this section.
-- **Backend**: NestJS API proxy that aggregates blockchain data. Database is not required, can use in-memory caching if needed. If applying to **FullStack with Backend expertise** we expect the main focus to be in this section.
+### Technical Stack
 
-### Optional 
+- **Frontend**: React with TypeScript (provided)
+- **Backend**: NestJS (provided)
+- **Network**: Ethereum Mainnet only
+- **Deployment**: Deploy your solution so we can test it live
 
-We provide the template setup with React and NestJS, but you are free to modify to any other tool you may prefer.
+**Focus Areas:**
 
-We appreciate **creativity** and encourage you to add your own touch.
+- **Backend Candidates:** We’re interested in understanding your thought process and how you apply best practices in areas like API design - you can choose which approaches you consider best. Production ready.
+- **Frontend candidates:** We’re interested in your thought process and how you apply best practices in areas like UI/UX, architecture, etc - you decide which approaches make the most sense. Production ready.
+- **Fullstack candidates**: Show integration skills and how you approach the full stack
 
-## 🔧 Available Commands
+## 🛠️ Setup
 
-```bash
-# Development
-npm run dev              # Start both services
-npm run dev:frontend     # Frontend only
-npm run dev:backend      # Backend only
+**Backend candidates:**
 
-# Testing
-npm run test            # Run all tests
-npm run test:frontend   # Frontend tests only
-npm run test:backend    # Backend tests only
+1. Get API keys (Alchemy or Etherscan) - see links below
+2. Configure environment variables for your API keys
+3. Start backend: `npm run dev:backend`
 
-# Building
-npm run build           # Build both projects
-```
+**Frontend candidates:**
 
-## 🛠️ Environment Setup
+1. Start frontend: `npm run dev:frontend`
+2. If mocking backend, no API keys needed
 
-The template includes `.env.example` files for both frontend and backend. Copy them to `.env` files and add your API keys:
+**Fullstack candidates:**
 
-- **Recommended**: Alchemy, Etherscan, CoinGecko
-- **Alternatives**: Moralis, CovalentHQ, Infura
+1. Get API keys and configure environment variables
+2. Start both: `npm run dev`
 
-## 📚 Implementation Notes
+**API Keys:**
 
-### Architecture Decisions Are Yours
+- **Alchemy**: https://dashboard.alchemy.com/ (free tier: 300M compute units/month)
+- **Etherscan**: https://etherscan.io/myapikey (free tier: 5 calls/second)
 
-- How to structure your components and services
-- Which blockchain APIs to integrate with
-- How to manage wallet state
-- Error handling strategy
-- UI/UX approach
+## 📋 Implementation Paths
 
-## 🤔 Need Blockchain APIs?
+Choose the path that matches your role:
 
-Common providers for Ethereum data:
+### 🎯 Backend-Focused (Backend candidates)
 
-- **Alchemy** - Reliable, good free tier
-- **Etherscan** - Great for transaction history
-- **CoinGecko** - Token prices and market data
+**Expected Time: 3-4 hours**
+
+Build a backend API that serves transaction data. You don't need to build the frontend.
+
+**What to build:**
+
+- An API endpoint that accepts an Ethereum address and returns transaction history
+- Fetch transaction data from blockchain providers (Alchemy, Etherscan, etc.)
+- Support pagination
+
+---
+
+### 🎨 Frontend-Focused (Frontend candidates)
+
+**Expected Time: 3-4 hours**
+
+Build a frontend application that displays transaction history. You can mock the backend or call blockchain APIs directly.
+
+**What to build:**
+
+- A UI where users can enter an Ethereum address and view transaction history
+- Display transaction information in a clear, usable way
+- When clicking the transaction it shows the transaction details
+
+**Options:**
+
+- Call blockchain APIs directly from the frontend
+
+---
+
+### 🔄 Fullstack (Fullstack candidates)
+
+**Expected Time: 5-6 hours**
+
+Build both the backend API and frontend UI.
+
+**What to build:**
+
+- Backend API that serves transaction data
+- Frontend UI that consumes the API and displays transactions
+- End-to-end functionality working together
+
+**Deploy both** frontend and backend so we can test the complete solution.
+
+## 🧪 Test Addresses
+
+- `0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045` (Vitalik Buterin)
+
+## 🚀 Production Readiness
+
+Your solution should be **production-ready** - as if we would continue working on this project and release it to users.
+
+**Important:** Feel free to apply production patterns and best practices even if they might seem "overengineered" for a small project. We want to see how you think about:
+
+We're interested in seeing your judgment on when to apply patterns, abstractions, and architectural decisions. If you think a pattern or approach would help with maintainability or future expansion, use it - even if it's more than what's strictly needed for this small project.
+
+**Deploy your solution** so we can test it live:
+
+- **Frontend**: [Vercel](https://vercel.com/), Netlify, or similar
+- **Backend**: [Railway](https://railway.app/), [Render](https://render.com/), or similar
+- **Fullstack**: Deploy both frontend and backend
+
+Make sure your deployed solution works and is accessible.
+
+You can add a file documenting your decisions, what you would do next, what's missing, and what you would do differently.
+
+## 📝 Submission
+
+1. Create a private fork of this repository
+2. Deploy your solution (frontend and/or backend)
+3. Share the repository and **deployment URLs** with us
+4. Invite @yagopv and @katspaugh as collaborators to your private repo
+
+**Include in your submission:**
+
+- Repository link
+- Frontend deployment URL (if applicable)
+- Backend deployment URL (if applicable)
+- Brief notes on any assumptions or decisions made
 
 ## 💡 AI Tools Welcome
 
-Feel free to use AI tools. We're interested in how you review, customize, and integrate AI-generated code.
-
-## How to provide your solution
-
-Please create a private fork of this repo at your own Github.
-Share it with us once you complete the challenge. Please invite @yagopv and @katspaugh as collaborators to your private repo.
+Feel free to use AI tools. We're interested in how you review and integrate AI-generated code.
