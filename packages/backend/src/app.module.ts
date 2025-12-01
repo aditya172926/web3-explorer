@@ -7,6 +7,7 @@ import { TransactionsService } from './transactions/transactions.service';
 import { TransactionsModule } from './transactions/transactions.module';
 import { HttpModule } from '@nestjs/axios';
 import { CacheModule } from '@nestjs/cache-manager';
+import { BalanceModule } from './balance/balance.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { CacheModule } from '@nestjs/cache-manager';
     }),
     TransactionsModule,
     HttpModule,
-    CacheModule.register()
+    CacheModule.register(),
+    BalanceModule
   ],
   controllers: [AppController, TransactionsController],
   providers: [AppService, TransactionsService],
