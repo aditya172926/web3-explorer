@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TransactionSummary } from './transactions.dto';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
@@ -47,12 +47,23 @@ export class TransactionsService {
             outbound_payload
         ];
 
-        const response = this.httpService.post(alchemy_api, batch_payload);
-        const {data} = await firstValueFrom(response);
-        const incoming_transactions = data[0]?.result.transfers ?? [];
-        const outgoing_transactions = data[1]?.result.transfers ?? [];
+        try {
+            const response = this.httpService.post(alchemy_api, batch_payload);
+            const {data} = await firstValueFrom(response);
+            const incoming_transactions = data[0]?.result.transfers ?? [];
+            const outgoing_transactions = data[1]?.result.transfers ?? [];
 
-        const all_transactions = [...incoming_transactions, ...outgoing_transactions];
-        return all_transactions;
+            const all_transactions = [...incoming_transactions, ...outgoing_transactions];
+            return all_transactions;
+        } catch (error) {
+            throw new HttpException(
+                {
+                    message: "Failed to fetch address historical transactions",
+                    error: error?.message ?? error.toString(),
+                    address
+                },
+                HttpStatus.BAD_GATEWAY
+            );
+        }
     }
 }
