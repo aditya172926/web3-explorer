@@ -8,6 +8,8 @@ import { TransactionsModule } from './transactions/transactions.module';
 import { HttpModule } from '@nestjs/axios';
 import { CacheModule } from '@nestjs/cache-manager';
 import { BalanceModule } from './balance/balance.module';
+import { BalanceService } from './balance/balance.service';
+import { BalanceController } from './balance/balance.controller';
 
 @Module({
   imports: [
@@ -19,7 +21,7 @@ import { BalanceModule } from './balance/balance.module';
     CacheModule.register(),
     BalanceModule
   ],
-  controllers: [AppController, TransactionsController],
-  providers: [AppService, TransactionsService],
+  controllers: [AppController, TransactionsController, BalanceController],
+  providers: [AppService, TransactionsService, BalanceService],
 })
 export class AppModule {}
