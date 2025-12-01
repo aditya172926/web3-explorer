@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { TransactionsController } from './transactions/transactions.controller';
 import { TransactionsService } from './transactions/transactions.service';
 import { TransactionsModule } from './transactions/transactions.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { TransactionsModule } from './transactions/transactions.module';
       isGlobal: true,
     }),
     TransactionsModule,
+    HttpModule
   ],
   controllers: [AppController, TransactionsController],
   providers: [AppService, TransactionsService],

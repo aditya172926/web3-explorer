@@ -1,47 +1,72 @@
 import { Injectable } from '@nestjs/common';
 import { TransactionSummary } from './transactions.dto';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class TransactionsService {
-    async fetch_user_transactions(address: string): Promise<TransactionSummary[]> {
-        const alchemy_api = '';
-        const payload = [
-            {
-                id: 1,
+    constructor(
+        private readonly httpService: HttpService
+    ) {}
+
+    async fetch_user_transactions(address: string) {
+        console.log("address ", address);
+        const alchemy_api = process.env.ALCHEMY_URL;
+        const base_payload = {
                 jsonrpc: "2.0",
                 method: "alchemy_getAssetTransfers",
-                params: {
-                    from: address
-                },
+            };
+
+        const inbound_payload = {
+            id: 1,
+            params: {
+                toAddress: address,
                 excludeZeroValue: false,
                 category: [
                     "external",
                     "internal",
                     "erc20",
-                    "erc721"
+                    "erc721",
+                    "erc1155"
                 ],
                 contractAddresses: [],
                 withMetadata: true
             },
-            {
-                id: 1,
-                jsonrpc: "2.0",
-                method: "alchemy_getAssetTransfers",
-                params: {
-                    to: address
-                },
+            ...base_payload
+        }
+
+        const outbound_payload = {
+            id: 2,
+            params: {
+                fromAddress: address,
                 excludeZeroValue: false,
                 category: [
                     "external",
                     "internal",
                     "erc20",
-                    "erc721"
+                    "erc721",
+                    "erc1155"
                 ],
                 contractAddresses: [],
                 withMetadata: true
-            }
-        ];
+            },
+            ...base_payload
+        }
 
-        let response = 
+        const batch_payload = [
+            inbound_payload,
+            outbound_payload
+        ]
+
+        console.log("batch payload, ", batch_payload);
+
+        const response = this.httpService.post(alchemy_api, batch_payload);
+        const {data} = await firstValueFrom(response);
+        const incoming_transactions = data[0]?.result.transfers ?? [];
+        const outgoing_transactions = data[1]?.result.transfers ?? [];
+
+        const all_transactions = [...incoming_transactions, ...outgoing_transactions];
+
+        return all_transactions;
     }
 }
