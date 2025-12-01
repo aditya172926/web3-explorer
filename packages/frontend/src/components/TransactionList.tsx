@@ -48,7 +48,7 @@ export default function TransactionList({ address, txnDirection }: Props) {
     setModalOpen(true);
 
     // Fetch receipt
-    const data = await getTransactionReceipt(txn.hash);
+    const data = await getTransactionReceipt(txn.transaction_hash);
     setReceipt(data);
   };
 
@@ -70,7 +70,7 @@ export default function TransactionList({ address, txnDirection }: Props) {
       {!loading && transactions.length === 0 && <p>No transactions found.</p>}
 
       {transactions.map(tx => (
-        <TransactionCard key={tx.hash} tx={tx} type={txnDirection === 0 ? 'inbound' : 'outbound'} onClick={openModal} />
+        <TransactionCard key={tx.transaction_hash} tx={tx} type={txnDirection === 0 ? 'inbound' : 'outbound'} onClick={openModal} />
       ))}
 
       <button

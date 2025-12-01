@@ -4,18 +4,20 @@ import { IsInt, IsOptional, Max, Min } from "class-validator";
 export class TransactionData {
     from: string;
     to: string;
+    value: string;
     transaction_hash: string;
-    block_number: number;
-    timestamp: number;
-    transaction_fee: number;
-    gas_price: number;
-    gas_fees: number
+    block_number: string;
+    block_timestamp: string;
+    category: string;
+    asset: string;
+    erc721_token_id?: string;
+    erc1155_metadata?: string;
+    token_id?: string;
 }
 
-export class TransactionSummary {
-    from: string;
-    to: string;
-    transaction_hash: string;
+export class TransactionHistoryResult {
+    transactions: TransactionData[];
+    pageKey: string;
 }
 
 export class PaginationDto {
