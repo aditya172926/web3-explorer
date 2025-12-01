@@ -27,14 +27,14 @@ export interface Transaction {
 
 
 export interface TransactionResponse {
-    data: Transaction[];
-    nextPageKey: string | null;
+    transactions: Transaction[];
+    pageKey: string | null;
 }
 
 export interface GetTransactionsParams {
     txnDirection: 0 | 1;
     limit?: number;
-    pageKey?: string;
+    pageKey: string | null;
 }
 
 export interface TransactionReceipt {

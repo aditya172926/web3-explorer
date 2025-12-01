@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { BACKEND_BASE_URL } from '../constants';
-import { GetTransactionsParams, Transaction, TransactionReceipt } from '../interfaces';
+import { GetTransactionsParams, TransactionReceipt, TransactionResponse } from '../interfaces';
 
 export async function getTransactions(
     address: string,
-    { txnDirection, limit = 20, pageKey = "1" }: GetTransactionsParams
-): Promise<Transaction[]> {
-    const res = await axios.get<Transaction[]>(
+    { txnDirection, limit = 20, pageKey = "0x0" }: GetTransactionsParams
+): Promise<TransactionResponse> {
+    const res = await axios.get<TransactionResponse>(
         `${BACKEND_BASE_URL}/transaction/history/${txnDirection}/${address}`,
         {
             params: {

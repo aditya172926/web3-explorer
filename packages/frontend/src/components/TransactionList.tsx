@@ -16,27 +16,33 @@ export default function TransactionList({ address, txnDirection }: Props) {
   const [selectedTxn, setSelectedTxn] = useState<Transaction | null>(null);
   const [receipt, setReceipt] = useState<TransactionReceipt | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [pageKey, setPageKey] = useState<string | null>('0x0');
+
+  const fetchData = async (reset = true) => {
+    setLoading(true);
+    setError('');
+    if (reset) {
+      setTransactions([]);
+    }
+    let nextPageKey = reset ? '0x0' : pageKey;
+    try {
+      const res = await getTransactions(address, { txnDirection, limit: 5, pageKey: nextPageKey });
+      console.log(res);
+      setTransactions(prev => [...(reset ? [] : prev), ...res.transactions]);
+      console.log("page key ", pageKey);
+      setPageKey(res.pageKey);
+    } catch (err: any) {
+      console.error(err);
+      setError('Failed to fetch transactions');
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   useEffect(() => {
     if (!address) return;
-
-    const fetchData = async () => {
-      setLoading(true);
-      setTransactions([]);
-      setError('');
-      try {
-        const res = await getTransactions(address, { txnDirection, limit: 20 });
-        console.log(res);
-        setTransactions(res);
-      } catch (err: any) {
-        console.error(err);
-        setError('Failed to fetch transactions');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchData(true);
   }, [address, txnDirection]);
 
 
@@ -67,15 +73,23 @@ export default function TransactionList({ address, txnDirection }: Props) {
       {!loading && transactions.length === 0 && <p>No transactions found.</p>}
 
       {transactions.map(tx => (
-        <TransactionCard key={tx.hash} tx={tx} type={txnDirection === 0 ? 'inbound' : 'outbound'} onClick={openModal}/>
+        <TransactionCard key={tx.hash} tx={tx} type={txnDirection === 0 ? 'inbound' : 'outbound'} onClick={openModal} />
       ))}
 
-    <TransactionDetailsModal
-      open={modalOpen}
-      onClose={closeModal}
-      txn_data={selectedTxn}
-      receipt={receipt}
-    />
+      <button
+        disabled={!pageKey || loading}
+        onClick={() => fetchData(false)} // `false` = append
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        {loading ? "Loading..." : "Load More"}
+      </button>
+
+      <TransactionDetailsModal
+        open={modalOpen}
+        onClose={closeModal}
+        txn_data={selectedTxn}
+        receipt={receipt}
+      />
     </div>
   );
 }
