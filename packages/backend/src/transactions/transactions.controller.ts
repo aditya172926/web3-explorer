@@ -1,6 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { TransactionSummary } from './transactions.dto';
 import { TransactionsService } from './transactions.service';
+import { EvmaddressPipe } from 'src/pipes/evmaddress/evmaddress.pipe';
 
 @Controller('transactions')
 export class TransactionsController {
@@ -10,9 +10,8 @@ export class TransactionsController {
     ) {}
 
     @Get(':address')
-    async fetch_transactions(@Param() params: any) {
-        const user_address = params.address;
-        return await this.transactionService.fetch_user_transactions(user_address);
+    async fetch_transactions(@Param('address', EvmaddressPipe) address: string) {
+        return await this.transactionService.fetch_user_transactions(address);
     }
 
     @Get(':transaction_hash')
