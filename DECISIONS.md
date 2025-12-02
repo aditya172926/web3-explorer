@@ -105,3 +105,9 @@ These are the following point on frontend and backend that I would like to do ne
 - group different related transactions together (external, internal, etc)
 - dockerize the workspaces
 - development to production rolling deployments with CI
+
+## Use of AI
+I used AI tools Claude and Github copilot for discussing development approaches and writing code faster. I generally use AI to brainstorm and get tradeoffs between multiple solutions that I come up with for a problem.
+I have the final say and the code from AI is not directly copy pasted into the repository. It is reviewed, questioned and has a lot of inputs and modifications before it actually goes into the codebase.
+One of the main things I brainstormed with AI tools was to keep the code and external packages dependencies to a minimum and use more in-house solutions. The reason for this is about security, maintainability and the code doesn't need to be touched for a long time or constantly require patches or fixes just to keep the same level of functioning.
+Every decision and code that is being written, I think in a way that we should design it in such a way that it doesn't need a lot of attention later on. These types of thoughts I try to validate by asking questions to AI and reviewing their approaches as well.
