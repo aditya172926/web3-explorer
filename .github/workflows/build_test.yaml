@@ -26,5 +26,5 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Run Jest tests
-        run: npm test -- --ci --runInBand
+      - name: Run Backend tests
+        run: npm test:backend
