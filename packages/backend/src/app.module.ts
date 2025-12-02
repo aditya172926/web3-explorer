@@ -19,7 +19,11 @@ import { APP_GUARD } from '@nestjs/core';
       isGlobal: true,
     }),
     TransactionsModule,
-    HttpModule,
+    HttpModule.register(
+      {
+        timeout: 15000 // 15 secs
+      }
+    ),
     CacheModule.register(),
     BalanceModule,
     ThrottlerModule.forRoot({
