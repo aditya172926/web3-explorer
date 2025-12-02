@@ -8,7 +8,8 @@ This project is a **full-stack Ethereum portfolio dashboard** built using:
 * **Testing:** Jest
 * **CI/CD:** GitHub Actions
 * **Rate Limiting:** Nest Throttler
-* **Hosting Solutions:** Vercel, Render
+* **Cache:** Nest Cache in-memory provider
+* **Hosting Solutions:** Vercel, Railway
 
 The app allows users to:
 
