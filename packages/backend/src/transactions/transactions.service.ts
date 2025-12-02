@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { PaginationDto, TransactionData, TransactionHistoryResult, TransactionReceiptResult } from './transactions.dto';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
@@ -9,9 +9,11 @@ import { TransactionDirection } from 'src/configs/enums';
 
 @Injectable()
 export class TransactionsService {
+    private readonly logger = new Logger(TransactionsService.name);
+
     constructor(
         private readonly httpService: HttpService,
-        @Inject(CACHE_MANAGER) private cacheManager: Cache
+        @Inject(CACHE_MANAGER) private cacheManager: Cache,
     ) {}
 
     async fetch_user_transactions(
@@ -73,8 +75,10 @@ export class TransactionsService {
                 transactions,
                 pageKey
             }
+            this.logger.log(`Returning user transaction history with address ${address}`);
             return txn_result;
         } catch (error) {
+            this.logger.error(`Error in fetching transaction history ${error}`);
             throw new HttpException(
                 {
                     message: "Failed to fetch address historical transactions",
@@ -107,8 +111,10 @@ export class TransactionsService {
             let {data} = await firstValueFrom(response);
             const result: TransactionReceiptResult = data.result;
             await this.cacheManager.set(transaction_hash, result, CACHE_TRANSACTION_RECEIPTS_TIME);
+            this.logger.log(`Returning transaction data for transaction hash ${transaction_hash}`);
             return result;
         } catch (error) {
+            this.logger.error(`Error in fetching transaction receipt data with transaction hash ${transaction_hash}, error: ${error}`);
             throw new HttpException(
                 {
                     message: "Failed to fetch transaction receipt for transaction hash",
