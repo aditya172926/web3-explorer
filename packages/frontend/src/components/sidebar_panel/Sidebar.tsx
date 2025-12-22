@@ -21,7 +21,6 @@ export default function Sidebar() {
                 <AddressInput onSubmit={updateSelectedAddress} />
             </div>
 
-            {/* Middle (fills remaining space) */}
             <div className="flex flex-col">
                 {sidebarNavBtns.map((btn, index) => (
                     <button
@@ -33,12 +32,10 @@ export default function Sidebar() {
                 ))}
             </div>
 
-            {/* Bottom (span 1 row) */}
             <div className="flex justify-center text-slate-400">
                 <ConnectButton />
             </div>
         </div>
-
     )
 }
 

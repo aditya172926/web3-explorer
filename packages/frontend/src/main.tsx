@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
+import {RouterProvider} from 'react-router-dom';
 import './index.css'
 
 import {
@@ -15,6 +16,7 @@ import {
   QueryClientProvider,
   QueryClient,
 } from "@tanstack/react-query";
+import { router } from './routes.ts';
 
 const config = getDefaultConfig({
   appName: 'Defi Portfolio Tracker',
@@ -29,7 +31,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <App />
+          <RouterProvider router={router} />
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

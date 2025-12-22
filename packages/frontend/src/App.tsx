@@ -1,18 +1,15 @@
 import { useEffect } from 'react';
-import DashboardTabs from './components/DashboardTabs';
 import '@rainbow-me/rainbowkit/styles.css';
 
 
 import { useAccount } from 'wagmi';
 import { useSelectedAddress } from './state';
-import Sidebar from './components/sidebar_panel/Sidebar';
+import { Outlet } from 'react-router';
 
 
 function App() {
-  const address = useSelectedAddress((state) => state.address);
   const updateSelectedAddress = useSelectedAddress((state) => state.updateSelectedAddress)
   const { address: connectedAddress, isConnected } = useAccount();
-
 
   // Automatically use connected wallet unless user overrides
   useEffect(() => {
@@ -22,16 +19,7 @@ function App() {
   }, [isConnected, connectedAddress]);
 
   return (
-    <div>
-      <div className='flex h-screen'>
-        <div className='flex-1 p-2 bg-slate-900 text-white'>
-          <Sidebar />
-        </div>
-        <div className='flex-3 px-2 bg-slate-50 overflow-y-auto'>
-          <DashboardTabs address={address} />
-        </div>
-      </div>
-    </div>
+    <Outlet />
   );
 }
 
