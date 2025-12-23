@@ -11,7 +11,7 @@ export default function BalanceCard({ balanceData }: Props) {
             className="grid grid-cols-2 gap-4 py-3 pl-1 cursor-pointer hover:shadow-md transition"
         >
             <div className="text-sm text-gray-600">
-                {format_slice(balanceData.token_contract_address)}
+                {balanceData.token_contract_address}
             </div>
             <div className="text-sm text-gray-600">
                 {balanceData.balance}
