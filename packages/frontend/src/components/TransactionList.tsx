@@ -3,7 +3,6 @@ import { getTransactionReceipt, getTransactions } from '../services/transactions
 import TransactionCard from './TransactionCard';
 import { TransactionDetailsModal } from './TransactionDetailsModal';
 import { Transaction, TransactionReceiptResult } from '../interfaces';
-import { useLoadingState } from '../state';
 
 interface Props {
   address: string;
@@ -11,9 +10,7 @@ interface Props {
 }
 
 export default function TransactionList({ address, txnDirection }: Props) {
-  const currentLoadingState = useLoadingState((state) => state.loading);
-  const updateLoadingState = useLoadingState((state) => state.updateLoadingState);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [error, setError] = useState('');
   const [selectedTxn, setSelectedTxn] = useState<Transaction | null>(null);
@@ -22,7 +19,7 @@ export default function TransactionList({ address, txnDirection }: Props) {
   const [pageKey, setPageKey] = useState<string | null>('0x0');
 
   const fetchData = async (reset = true) => {
-    updateLoadingState(true);
+    setLoading(true);
     setError('');
     if (reset) {
       setTransactions([]);
@@ -30,13 +27,12 @@ export default function TransactionList({ address, txnDirection }: Props) {
     let nextPageKey = reset ? '0x0' : pageKey;
     try {
       const res = await getTransactions(address, { txnDirection, limit: 5, pageKey: nextPageKey });
-      console.log(res);
       setTransactions(prev => [...(reset ? [] : prev), ...res.transactions]);
       setPageKey(res.pageKey);
     } catch (err: any) {
       setError(err?.response.data.message || 'Failed to fetch transactions');
     } finally {
-      updateLoadingState(false);
+      setLoading(false);
     }
   };
 
@@ -68,7 +64,7 @@ export default function TransactionList({ address, txnDirection }: Props) {
         </div>
       )}
 
-      {currentLoadingState ? (
+      {loading ? (
         <div className="flex flex-col items-center justify-center py-10">
           <div className="w-8 h-8 border-4 border-gray-300 border-t-indigo-600 rounded-full animate-spin"></div>
           <p className="mt-3 text-sm text-gray-600">Loading transactions...</p>
@@ -95,11 +91,11 @@ export default function TransactionList({ address, txnDirection }: Props) {
 
               <div className="flex flex-col items-center justify-center py-10">
                 <button
-                  disabled={!pageKey || currentLoadingState}
+                  disabled={!pageKey || loading}
                   onClick={() => fetchData(false)} // `false` = append
                   className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 >
-                  {currentLoadingState ? "Loading..." : "Load More"}
+                  {loading ? "Loading..." : "Load More"}
                 </button>
               </div>
 

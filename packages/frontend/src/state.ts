@@ -12,14 +12,3 @@ export const useSelectedAddress = create<SelectedAddressState>((set) => ({
     updateSelectedAddress: (newAddress: string) => set({address: newAddress}),
     resetSelectedAddress: () => set({address: ''})
 }))
-
-// -- Loading state --
-type LoadingState = {
-    loading: boolean,
-    updateLoadingState: (loading: boolean) => void
-}
-
-export const useLoadingState = create<LoadingState>((set) => ({
-    loading: false,
-    updateLoadingState: (loading: boolean) => set({loading: loading})
-}))

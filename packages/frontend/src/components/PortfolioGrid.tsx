@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getBalances, BalanceData } from '../services/portfolio';
+import BalanceCard from './BalanceCard';
 
 interface Props {
     address: string;
@@ -32,26 +33,30 @@ export default function PortfolioGrid({ address }: Props) {
         fetchBalances();
     }, [address]);
 
-    if (loading) return <p>Loading portfolio...</p>;
-    if (error) return <p className="text-red-500">{error}</p>;
-    if (balances.length === 0) return <p>No balances found</p>;
+    if (loading) return (
+        <div className="flex flex-col items-center justify-center py-10">
+          <div className="w-8 h-8 border-4 border-gray-300 border-t-indigo-600 rounded-full animate-spin"></div>
+          <p className="mt-3 text-sm text-gray-600">Loading Portfolio</p>
+        </div>
+    );
+
+    if (balances.length === 0 || error) return (
+        <div className="flex flex-col items-center justify-center py-10">
+          <p className="mt-3 text-sm text-gray-600">No balances found</p>
+        </div>
+    );
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {balances.map(b => (
-                <div
-                    key={b.token_contract_address}
-                    className="p-4 bg-gradient-to-br from-blue-50 to-white rounded-lg shadow hover:shadow-lg border border-blue-100 transition-shadow cursor-pointer"
-                >
-                    <div className="flex items-center justify-between mb-2">
-                        <p className="font-semibold truncate">{b.token_contract_address}</p>
-                    </div>
-                    <p className="text-xl font-bold text-gray-800">
-                        {parseFloat(b.balance).toFixed(4)} {/* truncate to 4 decimals */}
-                    </p>
-                </div>
-            ))}
-
+        <div className='grid h-full grid-rows-[auto_1fr]'>
+            <div className='grid grid-cols-2 gap-4 mb-3'>
+                <div>Token Address</div>
+                <div>Balance</div>
+            </div>
+            <div className='grid grid-cols-1'>
+                {balances.map(balance => (
+                    <BalanceCard balanceData={balance}/>
+                ))}
+            </div>
         </div>
     );
 }
