@@ -1,42 +1,48 @@
+import { TRANSACTION_BADGE_COLOR } from "../constants";
+import { format_slice } from "../helper";
 import { Transaction } from "../interfaces";
+import Badge from "./Badge";
 
 interface Props {
-    tx: Transaction;
-    type: 'inbound' | 'outbound';
-    onClick: (tx: Transaction) => void;
-  }
-  
-  export default function TransactionCard({ tx, type, onClick }: Props) {
-    const isInbound = type === 'inbound';
-    const bgColor = isInbound ? 'bg-green-50' : 'bg-red-50';
-    const borderColor = isInbound ? 'border-green-200' : 'border-red-200';
-  
-    return (
-      <div
-        className={`w-full p-6 border ${borderColor} rounded mb-4 ${bgColor} shadow-sm cursor-pointer hover:shadow-md transition mx-auto`}
-        onClick={() => onClick(tx)}
-      >
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold">{isInbound ? 'Received' : 'Sent'}</span>
-            <span className="ml-1 font-medium">{tx.value} {tx.asset || 'ETH'}</span>
-          </div>
-          <div className="text-sm text-gray-500">
-            {tx.block_timestamp || 'N/A'}
-          </div>
-        </div>
-  
-        <div className="mt-2 text-sm text-gray-700 font-medium">
-          Category: {tx.category}
-        </div>
-  
-        <div className="text-sm text-gray-600 mt-1 break-all">
-          Hash: {tx.transaction_hash}
-        </div>
-        <div className="text-sm text-gray-600 break-all">
-          From: {tx.from} → To: {tx.to}
-        </div>
+  tx: Transaction;
+  type: 'inbound' | 'outbound';
+  onClick: (tx: Transaction) => void;
+}
+
+export default function TransactionCard({ tx, type, onClick }: Props) {
+  const isInbound = type === 'inbound';
+
+  return (
+    <div
+      className="grid grid-cols-6 gap-4 py-3 pl-1 cursor-pointer hover:shadow-md transition"
+      onClick={() => onClick(tx)}
+    >
+      <div className="text-sm text-gray-600 break-all">
+        {format_slice(tx.transaction_hash)}
       </div>
-    );
-  }
-  
+      <div className="text-sm">
+        {isInbound ?
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-6 fill-green-600">
+            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-.53 14.03a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V8.25a.75.75 0 0 0-1.5 0v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3Z" clip-rule="evenodd" />
+          </svg>
+          :
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-6 fill-red-600">
+            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm.53 5.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l1.72-1.72v5.69a.75.75 0 0 0 1.5 0v-5.69l1.72 1.72a.75.75 0 1 0 1.06-1.06l-3-3Z" clip-rule="evenodd" />
+          </svg>
+        }
+      </div>
+      <div className="text-sm text-gray-600 break-all">
+        {format_slice(tx.from)}
+      </div>
+      <div className="text-sm text-gray-600 break-all">
+        {format_slice(tx.to)}
+      </div>
+      <div className="text-sm text-gray-600 break-all">
+        <Badge text={tx.category} backgroundColor={TRANSACTION_BADGE_COLOR[tx.category]}/>
+      </div>
+      <div className="text-sm text-gray-600 break-all">
+        {format_slice(tx.block_number)}
+      </div>
+    </div>
+  );
+}

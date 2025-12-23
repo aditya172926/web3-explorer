@@ -10,8 +10,8 @@ interface Props {
 }
 
 export default function TransactionList({ address, txnDirection }: Props) {
+  const [loading, setLoading] = useState<boolean>(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedTxn, setSelectedTxn] = useState<Transaction | null>(null);
   const [receipt, setReceipt] = useState<TransactionReceiptResult | null>(null);
@@ -36,12 +36,10 @@ export default function TransactionList({ address, txnDirection }: Props) {
     }
   };
 
-
   useEffect(() => {
     if (!address) return;
     fetchData(true);
   }, [address, txnDirection]);
-
 
   const openModal = async (txn: Transaction) => {
     setSelectedTxn(txn);
@@ -66,34 +64,52 @@ export default function TransactionList({ address, txnDirection }: Props) {
         </div>
       )}
 
-      {loading && (
+      {loading ? (
         <div className="flex flex-col items-center justify-center py-10">
           <div className="w-8 h-8 border-4 border-gray-300 border-t-indigo-600 rounded-full animate-spin"></div>
           <p className="mt-3 text-sm text-gray-600">Loading transactions...</p>
         </div>
-      )}
-      {!loading && transactions.length === 0 && <p>No transactions found.</p>}
+      ) : (
+        <>
+          {transactions.length === 0 ? <p>No transactions found.</p> : (
+            <>
+              <div className='grid h-full grid-rows-[auto_1fr]'>
+                <div className='grid grid-cols-6 gap-4'>
+                  <div>Hash</div>
+                  <div>Direction</div>
+                  <div>From</div>
+                  <div>To</div>
+                  <div>Category</div>
+                  <div>Block</div>
+                </div>
+                <div className="grid grid-cols-1">
+                  {transactions.map((tx, index) => (
+                    <TransactionCard key={index} tx={tx} type={txnDirection === 0 ? 'inbound' : 'outbound'} onClick={openModal} />
+                  ))}
+                </div>
+              </div>
 
-      {transactions.map(tx => (
-        <TransactionCard key={tx.transaction_hash} tx={tx} type={txnDirection === 0 ? 'inbound' : 'outbound'} onClick={openModal} />
-      ))}
+              <div className="flex flex-col items-center justify-center py-10">
+                <button
+                  disabled={!pageKey || loading}
+                  onClick={() => fetchData(false)} // `false` = append
+                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  {loading ? "Loading..." : "Load More"}
+                </button>
+              </div>
 
-      <div className="flex flex-col items-center justify-center py-10">
-        <button
-          disabled={!pageKey || loading}
-          onClick={() => fetchData(false)} // `false` = append
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          {loading ? "Loading..." : "Load More"}
-        </button>
-      </div>
-
-      <TransactionDetailsModal
-        open={modalOpen}
-        onClose={closeModal}
-        txn_data={selectedTxn}
-        receipt={receipt}
-      />
-    </div>
+              <TransactionDetailsModal
+                open={modalOpen}
+                onClose={closeModal}
+                txn_data={selectedTxn}
+                receipt={receipt}
+              />
+            </>
+          )}
+        </>
+      )
+      }
+    </div >
   );
 }

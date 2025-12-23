@@ -1,5 +1,6 @@
 import {create} from 'zustand';
 
+// -- Address state --
 type SelectedAddressState = {
     address: string,
     updateSelectedAddress: (newAddress: string) => void,
