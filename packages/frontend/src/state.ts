@@ -24,7 +24,7 @@ type OnChainProvider = {
 export const useOnChainClient = create<OnChainProvider>((set) => ({
     providerClient: createPublicClient({
         chain: mainnet,
-        transport: http(`${import.meta.env.VITE_ALCHEMY_MAINNET_RPC_URL}/${import.meta.env.VITE_ALCHEMY_API_KEY}`)
+        transport: http()
     }),
     setPublicClient: (client: PublicClient) => set({providerClient: client})
 }))
