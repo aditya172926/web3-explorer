@@ -6,6 +6,7 @@ import { useOnChainClient, useSelectedAddress } from "../../state";
 import AddressInput from "../AddressInput";
 import AccountCard from './AccountCard';
 import SidebarBalanceCard from './SidebarBalanceCard';
+import SidebarTransactionCard from './SidebarTransactionCard';
 
 export default function Sidebar() {
     const providerClient = useOnChainClient((state) => state.providerClient);
@@ -28,12 +29,13 @@ export default function Sidebar() {
             const blockNumber = await providerClient.getBlockNumber();
             const balance = formatEther(await providerClient.getBalance({address}));
             const isContract = await providerClient.getCode({ address: address });
-            console.log("is contract ", isContract);
+            const transactionCount = await providerClient.getTransactionCount({address});
             setAccountData(
                 {
                     balance: balance.toString(),
                     blockNumber: blockNumber.toString(),
-                    isContract: isContract ? true : false
+                    isContract: isContract ? true : false,
+                    transactionCount
                 }
             )
         } catch (error) {
@@ -54,8 +56,9 @@ export default function Sidebar() {
             </div>
 
             <div className="overflow-y-auto overflow-x-hidden">
-                <div className="flex flex-row flex-wrap gap-2 justify-evenly">
-                    <AccountCard address={address} />
+                <div className="flex flex-col flex-wrap gap-2 justify-evenly">
+                    <AccountCard address={address} isContract={accountData?.isContract} />
+                    <SidebarTransactionCard transactionCount={accountData?.transactionCount} />
                     <SidebarBalanceCard balance={accountData?.balance} blockNumber={accountData?.blockNumber} />
                 </div>
             </div>
