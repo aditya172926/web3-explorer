@@ -52,12 +52,22 @@ function BalanceCard({balance, blockNumber}: BalanceProps) {
 
                         <h3>Balance</h3>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2" title={balance}>
                         <div className="flex item-baseline gap-2">
-                            <span className="text-2xl font-bold text-white truncate flex-1 min-w-0">
-                                {balance}
+                            <span className="text-sm font-bold text-white truncate flex-1 min-w-0">
+                                {format_slice(balance)}
                             </span>
-                            <span className="text-sm text-slate-400">ETH</span>
+                            <span className="text-sm text-slate-600">ETH</span>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex gap-2">
+                            <span className="text-sm text-slate-600">
+                                Block
+                            </span>
+                            <span className="text-sm">
+                                {blockNumber}
+                            </span>
                         </div>
                     </div>
                 </div>
