@@ -7,12 +7,15 @@ import AddressInput from "../AddressInput";
 import AccountCard from './AccountCard';
 import SidebarBalanceCard from './SidebarBalanceCard';
 import SidebarTransactionCard from './SidebarTransactionCard';
+import ChainCard from './ChainCard';
 
 interface AccountData {
     balance: string,
     blockNumber: string,
     isContract: boolean,
-    transactionCount: number
+    transactionCount: number,
+    chainId: number,
+    gasPrice: string
 }
 
 export default function Sidebar() {
@@ -37,12 +40,16 @@ export default function Sidebar() {
             const balance = formatEther(await providerClient.getBalance({address: address as `0x${string}`}));
             const isContract = await providerClient.getCode({ address: address as `0x${string}` });
             const transactionCount = await providerClient.getTransactionCount({address: address as `0x${string}`});
+            const chainId = await providerClient.getChainId();
+            const gasPrice = formatEther(await providerClient.getGasPrice());
             setAccountData(
                 {
                     balance: balance.toString(),
                     blockNumber: blockNumber.toString(),
                     isContract: isContract ? true : false,
-                    transactionCount
+                    transactionCount,
+                    chainId,
+                    gasPrice
                 }
             )
         } catch (error) {
@@ -67,6 +74,7 @@ export default function Sidebar() {
                     <AccountCard address={address} isContract={accountData?.isContract} />
                     <SidebarTransactionCard transactionCount={accountData?.transactionCount} />
                     <SidebarBalanceCard balance={accountData?.balance} blockNumber={accountData?.blockNumber} />
+                    <ChainCard chainId={accountData?.chainId} gasPrice={accountData?.gasPrice} />
                 </div>
             </div>
 
