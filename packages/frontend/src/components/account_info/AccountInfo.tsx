@@ -1,11 +1,11 @@
-import { ReactElement, useState } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { useOnChainClient, useSelectedAddress } from "../../state";
 import DashboardTabs from "../DashboardTabs";
+import { formatEther } from "viem";
 
 interface AccountInfoData {
     totalTransactions: number,
-    totalGasSpent: number,
-    activeApprovals: number
+    balance: string
 }
 
 export default function AccountInfo() {
@@ -16,11 +16,23 @@ export default function AccountInfo() {
     async function fetch_account_info() {
         try {
             const totalTransactions = await providerClient.getTransactionCount({address: address as `0x${string}`});
+            const balance = formatEther(await providerClient.getBalance({address: address as `0x${string}`}));
             // const totalGasSpent = await providerClient
+            setAccountInfoData({
+                totalTransactions,
+                balance,
+            });
         } catch (error) {
             console.log("Error in fetching account info ", error);
         }
     }
+
+    useEffect(() => {
+        const fetch = async() => {
+            await fetch_account_info();
+        }
+        fetch();
+    }, [address])
 
     return (
         <div className="p-6 space-y-6">
@@ -39,7 +51,7 @@ export default function AccountInfo() {
                         </svg>
                     }
                     label="Total Transactions"
-                    value="2.3 years"
+                    value={accountInfoData?.totalTransactions}
                     color="blue"
                 />
                 <MetricCard
@@ -48,47 +60,24 @@ export default function AccountInfo() {
                             <path fill-rule="evenodd" d="M12.963 2.286a.75.75 0 0 0-1.071-.136 9.742 9.742 0 0 0-3.539 6.176 7.547 7.547 0 0 1-1.705-1.715.75.75 0 0 0-1.152-.082A9 9 0 1 0 15.68 4.534a7.46 7.46 0 0 1-2.717-2.248ZM15.75 14.25a3.75 3.75 0 1 1-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 0 1 1.925-3.546 3.75 3.75 0 0 1 3.255 3.718Z" clip-rule="evenodd" />
                         </svg>
                     }
-                    label="Total Gas Spent"
-                    value="1.42 ETH"
+                    label="Balance (ETH)"
+                    value={accountInfoData?.balance}
                     color="amber"
-                />
-                <MetricCard
-                    icon={
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
-                            <path fill-rule="evenodd" d="M11.484 2.17a.75.75 0 0 1 1.032 0 11.209 11.209 0 0 0 7.877 3.08.75.75 0 0 1 .722.515 12.74 12.74 0 0 1 .635 3.985c0 5.942-4.064 10.933-9.563 12.348a.749.749 0 0 1-.374 0C6.314 20.683 2.25 15.692 2.25 9.75c0-1.39.223-2.73.635-3.985a.75.75 0 0 1 .722-.516l.143.001c2.996 0 5.718-1.17 7.734-3.08ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75ZM12 15a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75v-.008a.75.75 0 0 0-.75-.75H12Z" clip-rule="evenodd" />
-                        </svg>
-                    }
-                    label="Active Approvals"
-                    value="22"
-                    color="purple"
                 />
             </div>
 
             {/* Main Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column - Charts */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-3 space-y-6">
                     {/* Activity Heatmap */}
                     <ContentCard title="Transactions">
                         <DashboardTabs address={address} />
                     </ContentCard>
-
-                    {/* <ContentCard title="Gas Spent Over Time">
-                        <div className="h-64 flex items-center justify-center text-stone-400 bg-stone-50 rounded border border-stone-200">
-                            Gas timeline chart
-                        </div>
-                    </ContentCard>
-
-                    <ContentCard title="Transaction Frequency">
-                        <div className="h-64 flex items-center justify-center text-stone-400 bg-stone-50 rounded border border-stone-200">
-                            Transaction frequency graph
-                        </div>
-                    </ContentCard> */}
                 </div>
 
                 {/* Right Column - Security & Approvals */}
-                <div className="space-y-6">
-                    {/* Token Approvals */}
+                {/* <div className="space-y-6">
                     <ContentCard title="Token Approvals">
                         <div className="space-y-3">
                             <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
@@ -105,7 +94,7 @@ export default function AccountInfo() {
                             </button>
                         </div>
                     </ContentCard>
-                </div>
+                </div> */}
             </div>
         </div>
     );

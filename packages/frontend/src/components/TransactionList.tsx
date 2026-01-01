@@ -3,15 +3,17 @@ import { getTransactionReceipt, getTransactions } from '../services/transactions
 import TransactionCard from './TransactionCard';
 import { TransactionDetailsModal } from './TransactionDetailsModal';
 import { Transaction, TransactionReceiptResult } from '../interfaces';
+import { TRANSACTION_CATEGORIES } from '../constants';
 
 interface Props {
   address: string;
   txnDirection: 0 | 1; // 0 = inbound, 1 = outbound
+  categoryIndex: number;
 }
 
-export default function TransactionList({ address, txnDirection }: Props) {
+export default function TransactionList({ address, txnDirection, categoryIndex }: Props) {
   const [loading, setLoading] = useState<boolean>(false);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<Record<string, Transaction[]>>({});
   const [error, setError] = useState('');
   const [selectedTxn, setSelectedTxn] = useState<Transaction | null>(null);
   const [receipt, setReceipt] = useState<TransactionReceiptResult | null>(null);
@@ -22,12 +24,23 @@ export default function TransactionList({ address, txnDirection }: Props) {
     setLoading(true);
     setError('');
     if (reset) {
-      setTransactions([]);
+      setTransactions({});
     }
     let nextPageKey = reset ? '0x0' : pageKey;
     try {
       const res = await getTransactions(address, { txnDirection, limit: 5, pageKey: nextPageKey });
-      setTransactions(prev => [...(reset ? [] : prev), ...res.transactions]);
+      console.log("res ", res);
+      // setTransactions(prev => {...(reset ? {} : prev), ...res.transactions});
+      if (!reset) {
+        let transactionsData: Record<string, Transaction[]> = {};
+        TRANSACTION_CATEGORIES.map((category) => {
+          transactionsData[category] = transactions[category].concat(res.transactions[category]);
+        });
+        console.log("after grouping data ", transactionsData);
+        setTransactions(transactionsData);
+      } else {
+        setTransactions(res.transactions);
+      }
       setPageKey(res.pageKey);
     } catch (err: any) {
       setError(err?.response.data.message || 'Failed to fetch transactions');
@@ -71,7 +84,7 @@ export default function TransactionList({ address, txnDirection }: Props) {
         </div>
       ) : (
         <>
-          {transactions.length === 0 ? <p>No transactions found.</p> : (
+          {!transactions[TRANSACTION_CATEGORIES[categoryIndex]] ? <p>No transactions found.</p> : (
             <>
               <div className='grid h-full grid-rows-[auto_1fr]'>
                 <div className='grid grid-cols-6 gap-4'>
@@ -83,7 +96,7 @@ export default function TransactionList({ address, txnDirection }: Props) {
                   <div>Block</div>
                 </div>
                 <div className="grid grid-cols-1">
-                  {transactions.map((tx, index) => (
+                  {transactions[TRANSACTION_CATEGORIES[categoryIndex]].map((tx, index) => (
                     <TransactionCard key={index} tx={tx} type={txnDirection === 0 ? 'inbound' : 'outbound'} onClick={openModal} />
                   ))}
                 </div>

@@ -24,7 +24,7 @@ export interface Transaction {
 
 
 export interface TransactionResponse {
-    transactions: Transaction[];
+    transactions: Record<string, Transaction[]>;
     pageKey: string | null;
 }
 
