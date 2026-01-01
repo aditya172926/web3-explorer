@@ -1,5 +1,6 @@
 import { ReactElement, useState } from "react";
 import { useOnChainClient, useSelectedAddress } from "../../state";
+import DashboardTabs from "../DashboardTabs";
 
 interface AccountInfoData {
     totalTransactions: number,
@@ -68,25 +69,21 @@ export default function AccountInfo() {
                 {/* Left Column - Charts */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* Activity Heatmap */}
-                    <ContentCard title="Activity Heatmap">
-                        <div className="h-48 flex items-center justify-center text-stone-400 bg-stone-50 rounded border border-stone-200">
-                            GitHub-style contribution calendar
-                        </div>
+                    <ContentCard title="Transactions">
+                        <DashboardTabs address={address} />
                     </ContentCard>
 
-                    {/* Gas Spent Over Time */}
-                    <ContentCard title="Gas Spent Over Time">
+                    {/* <ContentCard title="Gas Spent Over Time">
                         <div className="h-64 flex items-center justify-center text-stone-400 bg-stone-50 rounded border border-stone-200">
                             Gas timeline chart
                         </div>
                     </ContentCard>
 
-                    {/* Transaction Frequency */}
                     <ContentCard title="Transaction Frequency">
                         <div className="h-64 flex items-center justify-center text-stone-400 bg-stone-50 rounded border border-stone-200">
                             Transaction frequency graph
                         </div>
-                    </ContentCard>
+                    </ContentCard> */}
                 </div>
 
                 {/* Right Column - Security & Approvals */}

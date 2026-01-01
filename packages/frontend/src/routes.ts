@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
             {
                 Component: Transactions,
                 children: [
-                    { index: true, Component: DashboardTabs },
+                    { index: true, Component: AccountInfo },
                     { path: "portfolio", Component: PortfolioGrid },
                     { path: "accountInfo", Component: AccountInfo }
                 ]

@@ -6,8 +6,7 @@ type Props = {
   address: string;
 }
 
-export default function DashboardTabs() {
-  const {address} = useOutletContext<Props>();
+export default function DashboardTabs({address}: Props) {
   const [activeTab, setActiveTab] = useState<0 | 1 | 2>(0); // 0 = inbound, 1 = outbound, 2 = portfolio
 
   return (
