@@ -70,9 +70,14 @@ export class TransactionsService {
                 token_id: tx?.tokenId,
             }));
 
+            const groupByCategory = TRANSACTION_CATEGORIES.reduce((acc, category) => {
+                acc[category] = transactions.filter(tx => tx.category === category);
+                return acc;
+            }, {} as Record<string, TransactionData[]>);
+
             const pageKey = data?.result.pageKey;
             const txn_result: TransactionHistoryResult = {
-                transactions,
+                transactions: groupByCategory,
                 pageKey
             }
             this.logger.log(`Returning user transaction history with address ${address}`);

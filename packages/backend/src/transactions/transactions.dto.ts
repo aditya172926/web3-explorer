@@ -16,7 +16,7 @@ export class TransactionData {
 }
 
 export class TransactionHistoryResult {
-    transactions: TransactionData[];
+    transactions: Record<string, TransactionData[]>;
     pageKey: string;
 }
 
