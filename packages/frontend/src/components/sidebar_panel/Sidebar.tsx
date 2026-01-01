@@ -5,15 +5,13 @@ import { formatEther } from 'viem';
 import { useOnChainClient, useSelectedAddress } from "../../state";
 import AddressInput from "../AddressInput";
 import AccountCard from './AccountCard';
-import SidebarBalanceCard from './SidebarBalanceCard';
-import SidebarTransactionCard from './SidebarTransactionCard';
 import ChainCard from './ChainCard';
+import SidebarBalanceCard from './SidebarBalanceCard';
 
 interface AccountData {
     balance: string,
     blockNumber: string,
     isContract: boolean,
-    transactionCount: number,
     chainId: number,
     gasPrice: string
 }
@@ -39,7 +37,6 @@ export default function Sidebar() {
             const blockNumber = await providerClient.getBlockNumber();
             const balance = formatEther(await providerClient.getBalance({address: address as `0x${string}`}));
             const isContract = await providerClient.getCode({ address: address as `0x${string}` });
-            const transactionCount = await providerClient.getTransactionCount({address: address as `0x${string}`});
             const chainId = await providerClient.getChainId();
             const gasPrice = formatEther(await providerClient.getGasPrice());
             setAccountData(
@@ -47,7 +44,6 @@ export default function Sidebar() {
                     balance: balance.toString(),
                     blockNumber: blockNumber.toString(),
                     isContract: isContract ? true : false,
-                    transactionCount,
                     chainId,
                     gasPrice
                 }
@@ -72,7 +68,6 @@ export default function Sidebar() {
             <div className="overflow-y-auto overflow-x-hidden">
                 <div className="flex flex-col flex-wrap gap-2 justify-evenly">
                     <AccountCard address={address} isContract={accountData?.isContract} />
-                    <SidebarTransactionCard transactionCount={accountData?.transactionCount} />
                     <SidebarBalanceCard balance={accountData?.balance} blockNumber={accountData?.blockNumber} />
                     <ChainCard chainId={accountData?.chainId} gasPrice={accountData?.gasPrice} />
                 </div>
