@@ -3,15 +3,16 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { firstValueFrom } from 'rxjs';
-import { BalanceData } from './balance.dto';
 import { BALANCE_CACHE_PREFIX, CACHE_BALANCE_TIME } from 'src/configs/constants';
+import { AlchemyBalanceRequest, BalanceInfo, BalanceResponse } from './balance.types';
+import { HttpClientService } from 'src/http-client/http-client.service';
 
 @Injectable()
 export class BalanceService {
     private readonly logger = new Logger(BalanceService.name);
 
     constructor(
-        private readonly httpService: HttpService,
+        private readonly httpService: HttpClientService,
         @Inject(CACHE_MANAGER) private cacheManager: Cache
     ) { }
 
@@ -21,43 +22,73 @@ export class BalanceService {
             this.logger.log(`Returning cached balance for address ${address}`);
             return cached_balances;
         }
+        this.logger.debug(`Cache miss for address: ${address}, fetching from API`);
+        return this.fetchFromAlchemy(address);
+    }
 
-        const alchemy_api = `${process.env.ALCHEMY_BASE_URL}/${process.env.ALCHEMY_API_KEY}`;
+    private async fetchFromAlchemy(address: string): Promise<BalanceResponse> {
+        const alchemy_api = `${process.env.ALCHEMY_DATA_API_BASE_URL}/${process.env.ALCHEMY_API_KEY}/assets/tokens/by-address`;
 
-        const payload = {
-            "id": 1,
-            "jsonrpc": "2.0",
-            "method": "alchemy_getTokenBalances",
-            "params": [address],
-        }
-
-        try {
-            const result = this.httpService.post(alchemy_api, payload);
-            const { data } = await firstValueFrom(result);
-            const raw_balance = data?.result?.tokenBalances;
-            const balances: BalanceData[] = raw_balance.map((balance) => ({
-                token_contract_address: balance.contractAddress,
-                balance: this.hexToInteger(balance.tokenBalance)
-            })).filter(b => b.balance !== '0');
-
-            await this.cacheManager.set(`${BALANCE_CACHE_PREFIX}${address}`, balances, CACHE_BALANCE_TIME);
-            this.logger.log(`Returning fetched balances for address ${address}`);
-            return balances;
-        } catch (error) {
-            this.logger.error(`Error in fetching balances for address ${address}, error: ${error}`);
-            throw new HttpException(
+        const payload: AlchemyBalanceRequest = {
+            addresses: [
                 {
-                    message: "Failed to fetch balances for the address",
-                    error: error?.message ?? error.toString(),
-                    address
-                },
-                HttpStatus.BAD_GATEWAY
-            );
+                    address: address,
+                    networks: ["eth-mainnet"]
+                }
+            ]
         }
+
+        const result = this.httpService.post(alchemy_api, payload, {
+            timeoutMs: 10000,
+            retries: 3,
+            retryDelay: 1000
+        });
+        const { data } = await firstValueFrom(result);
+        // Validate response
+        if (!data?.data?.tokens) {
+            throw new Error('Invalid response structure from Alchemy API');
+        }
+
+        let balances: BalanceResponse = {
+            tokens: data.data.tokens
+        };
+        balances.tokens.map((balance, index) => {
+            const balance_int = this.hexToDecimalString(balance.tokenBalance, Number(balance.tokenMetadata.decimals));
+            if (balance.tokenAddress) {
+                balance.balanceUsd = (Number(balance_int) * Number(balance.tokenPrices.map((tokenPrice) => {if (tokenPrice.currency.toLowerCase() === "usd") {
+                    return tokenPrice.value
+                }}))).toString();
+            }
+            balance.formattedTokenBalance = balance_int;
+        });
+        await this.cacheManager.set(`${BALANCE_CACHE_PREFIX}${address}`, balances, CACHE_BALANCE_TIME);
+        this.logger.log(`Successfully fetched balances for address: ${address}`);
+        return balances;
     }
 
-    hexToInteger(hex: string): string {
+    private hexToDecimalString(hex: string, decimals = 0): string {
         if (!hex || hex === "0x" || hex === "0x0") return "0";
-        return BigInt(hex).toString();
+
+        const value = BigInt(hex);
+        if (decimals === 0) {
+            return value.toString();
+        }
+
+        const base = BigInt(10) ** BigInt(decimals);
+
+        const integer = value / base;
+        const fraction = value % base;
+
+        if (fraction === 0n) {
+            return integer.toString();
+        }
+
+        const fractionStr = fraction
+            .toString()
+            .padStart(decimals, "0")
+            .replace(/0+$/, "");
+
+        return `${integer.toString()}.${fractionStr}`;
     }
+
 }
