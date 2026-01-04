@@ -13,7 +13,6 @@ export default function PortfolioGrid() {
     const [balances, setBalances] = useState<BalanceInfo[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState<'balance' | 'value'>('value');
 
@@ -72,20 +71,6 @@ export default function PortfolioGrid() {
             <p className="mt-3 text-sm text-gray-600">No balances found</p>
         </div>
     );
-
-    // return (
-    //     <div className='grid h-full grid-rows-[auto_1fr]'>
-    //         <div className='grid grid-cols-2 gap-4 mb-3'>
-    //             <div>Token Address</div>
-    //             <div>Balance</div>
-    //         </div>
-    //         <div className='grid grid-cols-1'>
-    //             {balances.map(balance => (
-    //                 <BalanceCard balanceData={balance} />
-    //             ))}
-    //         </div>
-    //     </div>
-    // );
 
     return (
         <div className="h-full flex flex-col bg-gray-50">

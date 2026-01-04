@@ -14,6 +14,7 @@ import { HashTagIcon } from "./HashtagIcon";
 import { SearchIcon } from "./SearchIcon";
 import { TrendUpIcon } from "./TrendUpIcon";
 import { IconProps } from "./types";
+import { UserIcon } from "./UserIcon";
 
 export const Icons = {
     arrowLeft: ArrowLeftIcon,
@@ -30,7 +31,8 @@ export const Icons = {
     circleArrowDown: CircleArrowDownIcon,
     circleArrowUp: CircleArrowUpIcon,
     arrowDiagonalOut: ArrowDiagonalOutIcon,
-    search: SearchIcon
+    search: SearchIcon,
+    user: UserIcon
 } as const;
 
 export type IconName = keyof typeof Icons;
