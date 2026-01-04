@@ -49,14 +49,41 @@ export class BalanceService {
             throw new Error('Invalid response structure from Alchemy API');
         }
 
-        const balances: BalanceResponse = data.data.tokens;
+        let balances: BalanceResponse = {
+            tokens: data.data.tokens
+        };
+        balances.tokens.map((balance, index) => {
+            const balance_int = this.hexToDecimalString(balance.tokenBalance, Number(balance.tokenMetadata.decimals));
+            balance.tokenBalance = balance_int;
+        });
         await this.cacheManager.set(`${BALANCE_CACHE_PREFIX}${address}`, balances, CACHE_BALANCE_TIME);
         this.logger.log(`Successfully fetched balances for address: ${address}`);
         return balances;
     }
 
-    hexToInteger(hex: string): string {
+    private hexToDecimalString(hex: string, decimals = 0): string {
         if (!hex || hex === "0x" || hex === "0x0") return "0";
-        return BigInt(hex).toString();
+
+        const value = BigInt(hex);
+        if (decimals === 0) {
+            return value.toString();
+        }
+
+        const base = BigInt(10) ** BigInt(decimals);
+
+        const integer = value / base;
+        const fraction = value % base;
+
+        if (fraction === 0n) {
+            return integer.toString();
+        }
+
+        const fractionStr = fraction
+            .toString()
+            .padStart(decimals, "0")
+            .replace(/0+$/, "");
+
+        return `${integer.toString()}.${fractionStr}`;
     }
+
 }
