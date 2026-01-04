@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
-import { getTransactionReceipt, getTransactions } from '../services/transactions';
-import TransactionCard from './TransactionCard';
-import { TransactionDetailsModal } from './TransactionDetailsModal';
-import { Transaction, TransactionReceiptResult } from '../interfaces';
+import { useEffect, useState } from 'react';
 import { TRANSACTION_CATEGORIES } from '../constants';
+import { Transaction } from '../interfaces';
+import { getTransactions } from '../services/transactions';
+import TransactionCard from './TransactionCard';
 
 interface Props {
   address: string;
@@ -15,9 +14,6 @@ export default function TransactionList({ address, txnDirection, categoryIndex }
   const [loading, setLoading] = useState<boolean>(false);
   const [transactions, setTransactions] = useState<Record<string, Transaction[]>>({});
   const [error, setError] = useState('');
-  const [selectedTxn, setSelectedTxn] = useState<Transaction | null>(null);
-  const [receipt, setReceipt] = useState<TransactionReceiptResult | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
   const [pageKey, setPageKey] = useState<string | null>('0x0');
 
   const fetchData = async (reset = true) => {
@@ -54,21 +50,6 @@ export default function TransactionList({ address, txnDirection, categoryIndex }
     fetchData(true);
   }, [address, txnDirection]);
 
-  const openModal = async (txn: Transaction) => {
-    setSelectedTxn(txn);
-    setModalOpen(true);
-
-    // Fetch receipt
-    const data = await getTransactionReceipt(txn.transaction_hash);
-    setReceipt(data);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-    setSelectedTxn(null);
-    setReceipt(null);
-  };
-
   return (
     <div>
       {error && (
@@ -97,7 +78,7 @@ export default function TransactionList({ address, txnDirection, categoryIndex }
                 </div>
                 <div className="grid grid-cols-1">
                   {transactions[TRANSACTION_CATEGORIES[categoryIndex]].map((tx, index) => (
-                    <TransactionCard key={index} tx={tx} type={txnDirection === 0 ? 'inbound' : 'outbound'} onClick={openModal} />
+                    <TransactionCard key={index} tx={tx} type={txnDirection === 0 ? 'inbound' : 'outbound'} />
                   ))}
                 </div>
               </div>
@@ -111,13 +92,6 @@ export default function TransactionList({ address, txnDirection, categoryIndex }
                   {loading ? "Loading..." : "Load More"}
                 </button>
               </div>
-
-              <TransactionDetailsModal
-                open={modalOpen}
-                onClose={closeModal}
-                txn_data={selectedTxn}
-                receipt={receipt}
-              />
             </>
           )}
         </>
